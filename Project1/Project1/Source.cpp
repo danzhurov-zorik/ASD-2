@@ -153,8 +153,8 @@ bool fileSort(const std::string& filename)
 
 void main()
 {
-	for (int border = 10; border <= 10; border *= 100)
-		for (int size = 10000; size <= 10000; size *= 10)
+	for (int border = 10; border <= 100000; border *= 100)
+		for (int size = 10000; size <= 1000000; size *= 10)
 		{
 			std::string filename = "random_array_" + std::to_string(size) + "_" + std::to_string(border) + ".txt";
 
