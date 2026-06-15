@@ -86,6 +86,16 @@ int BinaryTree::maxKey() const{
 	return maxKey(m_root);
 }
 
+int BinaryTree::maxKeyNonRec() const{
+	std::vector<int> vectorKeys = this->getVectorKeys();
+	return vectorKeys[vectorKeys.size()-1];
+}
+
+int BinaryTree::minKeyNonRec() const {
+	std::vector<int> vectorKeys = this->getVectorKeys();
+	return vectorKeys[0];
+}
+
 int BinaryTree::minKey() const{
 	return minKey(m_root);
 }
@@ -96,6 +106,10 @@ BinaryTree::TreeNode* BinaryTree::addKey(int key){
 
 BinaryTree::TreeNode* BinaryTree::findKey(int key) const{
 	return findKey(m_root, key);
+}
+
+BinaryTree::TreeNode* BinaryTree::findKeyNonRec(int key) const {
+
 }
 
 bool BinaryTree::removeKey(int key){

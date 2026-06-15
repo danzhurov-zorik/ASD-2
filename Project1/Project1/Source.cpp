@@ -11,5 +11,11 @@ int main() {
 	BinaryTree BT(root);
 	BT.printTreeHorizontal(0, 10);
 	BT.addKey(3);
+	BT.addKey(-1);
+	BT.addKey(9);
 	BT.printTreeHorizontal(0, 10);
+	std::cout << "max key: " << BT.maxKeyNonRec() << " min key: " << BT.minKeyNonRec() << "\n";
+	std::cout << "find key: " << BT.findKey(2)->key();
+	
 }
+//поиск не через рекурсию

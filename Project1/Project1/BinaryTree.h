@@ -50,9 +50,12 @@ public:
 
 	int maxKey() const;
 	int minKey() const;
+	int maxKeyNonRec() const;
+	int minKeyNonRec() const;
 
 	TreeNode* addKey(int key);
 	TreeNode* findKey(int key) const;
+	TreeNode* findKeyNonRec(int key) const;
 
 	bool removeKey(int key);
 	TreeNode* searchParent(TreeNode* root, TreeNode* TreeNode) const;
@@ -96,10 +99,6 @@ private:
 	int indexNode(TreeNode* root, int key) const;
 
 	int countNodes(TreeNode* TreeNode) const;
-
-
-
-
 
 	bool contains(TreeNode* root, int key) const;
 
