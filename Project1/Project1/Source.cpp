@@ -180,69 +180,79 @@ void splittingWithSegments(const std::string& filename, const std::string& fileS
 	fileSplit[1].close();
 }
 
-void fileMergesWithSegments(const std::string& inputFile1, const std::string& inputFile2, const std::string& outputFile1, const std::string& outputFile2)
+void fileMergesWithSegments(const std::string& inputFile1, const std::string& inputFile2,
+    const std::string& outputFile1, const std::string& outputFile2)
 {
-	std::ifstream inputFile[2];
-	std::ofstream outputFile[2];
+    std::ifstream S[2];
+    S[0].open(inputFile1);
+    S[1].open(inputFile2);
+    std::ofstream F[2];
+    F[0].open(outputFile1);
+    F[1].open(outputFile2);
 
-	inputFile[0].open(inputFile1);
-	inputFile[1].open(inputFile2);
-	outputFile[0].open(outputFile1);
-	outputFile[1].open(outputFile2);
+    int x[2];                    
+    bool has[2];                 
 
-	int val1, val2;
-	inputFile[0] >> val1;
-	inputFile[1] >> val2;
+    for (int i = 0; i < 2; ++i) {
+        if (S[i] >> x[i])
+            has[i] = true;
+        else
+            has[i] = false;
+    }
 
-	while (!inputFile[0].eof() && !inputFile[1].eof()) {
-		std::vector<int> r1, r2;
+    int n = 0;
 
-		r1.push_back(val1);
-		while (inputFile[0] >> val1) {
-			if (val1 >= r1.back()) {
-				r1.push_back(val1);
-			}
-			else {
-				break;
-			}
-		}
+    while (has[0] || has[1]) {
+        bool active[2] = { has[0], has[1] };
 
-		r2.push_back(val2);
-		while (inputFile[1] >> val2) {
-			if (val2 >= r2.back()) {
-				r2.push_back(val2);
-			}
-			else {
-				break;
-			}
-		}
+        while (active[0] && active[1])
+        {
+            int m = (x[0] <= x[1]) ? 0 : 1;
+            F[n] << x[m] << " ";
 
-		int i = 0, j = 0, n = 0;
-		while (i < r1.size() && j < r2.size()) {
-			if (r1[i] <= r2[j]) {
-				outputFile[n] << r1[i] << " ";
-				i++;
-			}
-			else {
-				outputFile[n] << r2[j] << " ";
-				j++;
-			}
-		}
-		while (i < r1.size()) {
-			outputFile[n] << r1[i] << " ";
-			i++;
-		}
-		while (j < r2.size()) {
-			outputFile[n] << r2[j] << " ";
-			j++;
-		}
-		n = 1 - n;
-		r1.clear(), r2.clear();
-	}
-	inputFile[0].close();
-	inputFile[1].close();
-	outputFile[0].close();
-	outputFile[1].close();
+            int next;
+            if (S[m] >> next) {
+                if (next >= x[m]) {
+                    x[m] = next;
+                }
+                else {
+                    x[m] = next;
+                    active[m] = false;
+                }
+            }
+            else {
+                has[m] = false;
+                active[m] = false;
+            }
+        }
+
+        for (int i = 0; i < 2; ++i) {
+            if (active[i]) {
+                F[n] << x[i] << " ";
+                int next;
+                while (S[i] >> next) {
+                    if (next >= x[i]) {
+                        x[i] = next;
+                        F[n] << x[i] << " ";
+                    }
+                    else {
+                        x[i] = next;
+                        break;
+                    }
+                }
+                if (S[i].eof()) {
+                    has[i] = false;
+                }
+            }
+        }
+
+        n = 1 - n;
+    }
+
+    S[0].close();
+    S[1].close();
+    F[0].close();
+    F[1].close();
 }
 
 bool fileSortWithSegments(const std::string& filename) {
