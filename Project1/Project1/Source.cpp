@@ -15,7 +15,20 @@ int main() {
 	BT.addKey(9);
 	BT.printTreeHorizontal(0, 10);
 	std::cout << "max key: " << BT.maxKeyNonRec() << " min key: " << BT.minKeyNonRec() << "\n";
-	std::cout << "find key: " << BT.findKey(2)->key();
+	std::cout << "find key: " << BT.findKeyNonRec(2)->key()<< "\n";
+	BinaryTree BTCopy(BT);
+	BTCopy.removeKey(4);
+	BTCopy.printTreeHorizontal(0, 10);
+	std::cout << "height of BTCopy: " << BTCopy.height() << " height of key 9: " << BTCopy.nodeHeightIndex(9) << "\n";
+	
+	if (BTCopy.isBalanced()) 
+		std::cout << "BTCopy is balanced\n";
+	else 
+		std::cout << "BTCopy is not balanced\n";
+
+	BTCopy.removeSubtrees();
+	BT = BTCopy;
+	BT.printTreeHorizontal(0, 10);
 	
 }
 
