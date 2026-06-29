@@ -92,6 +92,11 @@ private:
 private:
 	TreeNode* copyTree(TreeNode* root);
 
+	TreeNode* findKeyNonRec(TreeNode* root, int key) const;
+
+	int maxKeyNonRec(TreeNode* Node) const;
+	int minKeyNonRec(TreeNode* Node) const;
+
 	void clear(TreeNode* TreeNode);
 	void removeSubtrees(TreeNode* TreeNode);
 

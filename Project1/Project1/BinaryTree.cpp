@@ -87,13 +87,11 @@ int BinaryTree::maxKey() const{
 }
 
 int BinaryTree::maxKeyNonRec() const{
-	std::vector<int> vectorKeys = this->getVectorKeys();
-	return vectorKeys[vectorKeys.size()-1];
+	return maxKeyNonRec(m_root);
 }
 
 int BinaryTree::minKeyNonRec() const {
-	std::vector<int> vectorKeys = this->getVectorKeys();
-	return vectorKeys[0];
+	return minKeyNonRec(m_root);
 }
 
 int BinaryTree::minKey() const{
@@ -109,7 +107,7 @@ BinaryTree::TreeNode* BinaryTree::findKey(int key) const{
 }
 
 BinaryTree::TreeNode* BinaryTree::findKeyNonRec(int key) const {
-
+	return findKeyNonRec(m_root, key);
 }
 
 bool BinaryTree::removeKey(int key){
@@ -272,6 +270,60 @@ int BinaryTree::minKey(TreeNode* TreeNode) const{
 	return std::min(TreeNode->key(), std::min(minLeft, minRight));
 }
 
+int BinaryTree::maxKeyNonRec(TreeNode* Node) const{
+	if (Node == nullptr) 
+		return INT_MIN;
+
+	int maxKey = Node->key();
+
+	std::vector<TreeNode*> stack;
+	stack.push_back(Node);
+
+	while (!stack.empty()) {
+		TreeNode* current = stack.back();
+		stack.pop_back();
+
+		if (current->key() > maxKey) {
+			maxKey = current->key();
+		}
+
+		if (current->rightChild() != nullptr) {
+			stack.push_back(current->rightChild());
+		}
+		if (current->leftChild() != nullptr) {
+			stack.push_back(current->leftChild());
+		}
+	}
+	return maxKey;
+}
+
+int BinaryTree::minKeyNonRec(TreeNode* Node) const{
+	if (Node == nullptr)
+		return INT_MAX;
+
+	int minKey = Node->key();
+
+	std::vector<TreeNode*> stack;
+	stack.push_back(Node);
+
+	while (!stack.empty()) {
+		TreeNode* current = stack.back();
+		stack.pop_back();
+
+		if (current->key() < minKey) {
+			minKey = current->key();
+		}
+
+		if (current->rightChild() != nullptr) {
+			stack.push_back(current->rightChild());
+		}
+		if (current->leftChild() != nullptr) {
+			stack.push_back(current->leftChild());
+		}
+	}
+	return minKey;
+}
+
 BinaryTree::TreeNode* BinaryTree::addKey(TreeNode* root, int key){
 	if (!root)
 	{
@@ -300,6 +352,31 @@ BinaryTree::TreeNode* BinaryTree::findKey(TreeNode* root, int key) const{
 		subTreeSearchResult = findKey(root->rightChild(), key);
 	}
 	return subTreeSearchResult;
+}
+
+BinaryTree::TreeNode* BinaryTree::findKeyNonRec(TreeNode* root, int key) const {
+	if (root == nullptr)
+		return nullptr;
+
+	std::vector<TreeNode*> stack;
+	stack.push_back(root);
+
+	while (!stack.empty()) {
+		TreeNode* current = stack.back();
+		stack.pop_back();
+		
+		if (current->key() == key) {
+			return current;
+		}
+
+		if (current->rightChild() != nullptr) {
+			stack.push_back(current->rightChild());
+		}
+		if (current->leftChild() != nullptr) {
+			stack.push_back(current->leftChild());
+		}
+	}
+	return nullptr;
 }
 
 bool BinaryTree::removeKey(TreeNode* root, int key){
