@@ -1,166 +1,314 @@
 #pragma once
-#include <iostream>
 
-class Usel {
-private:
-	int key;
-	int next;
-public:
-	Usel(int k = -1, int N = -1) { key = k, next = N; };
-	friend class Hash;
-};
+#include <math.h>
+#include <iostream>
+#include <vector>
+#include <utility>
+#include "List.h"
 
 class Hash {
-private:
-	int dim;
-	int p;
-	Usel* TAB;
-
 public:
-	Hash();
-	Hash(int a[], int n, int P); 
-	~Hash();
-	Hash(const Hash& other);
-	Hash& operator=(const Hash& other);
-
-	void Add(int k);    
-	int Find(int k) const;
-	void Del(int k);      
-	void Print() const;
+    virtual int hash(const int key, const int capacity) const = 0;
+    virtual Hash* other() const = 0;
 };
 
-Hash::Hash() : dim(2), p(2) {
-    TAB = new Usel[dim];
-}
+class QuadraticHash : public Hash {
+public:
+    int hash(const int  key, const int capacity) const override {
+        int h0 = key % capacity;
+        int hash = (h0 + 4) % capacity;
+        return abs(hash);
+    }
+    Hash* other() const override
+    {
+        return new QuadraticHash();
+    }
+};
 
-Hash::Hash(int a[], int n, int P) : dim(n + 5), p(P) {
-    TAB = new Usel[dim];
-    for (int i = 0; i < n; i++) {
-        Add(a[i]);
+class MultiplicationHash : public Hash {
+public:
+    int hash(const int key, const int capacity) const override {
+        int h0 = key % capacity;
+        double a = -(1. - std::sqrt(5)) / 2.;
+
+        int hash = int(h0 * a * capacity) % capacity;
+
+        return abs(hash);
+    }
+
+    Hash* other() const override {
+        return new MultiplicationHash();
+    }
+};
+
+class ThirdHash : public Hash {
+public:
+    int hash(const int key, const int capacity) const override
+    {
+        int h0 = key % capacity;
+        int hash = ((h0 + 1) * (1 + key % (capacity - 2))) % capacity;
+
+        return abs(hash);
+    }
+
+    Hash* other() const override
+    {
+        return new ThirdHash();
+    }
+};
+
+template <typename T>
+class HashTable
+{
+public:
+    HashTable() = default;
+    HashTable(Hash* hashFunction, int capacity);
+    HashTable(const HashTable& other);
+    ~HashTable();
+
+    void setCapacity(int capacity);
+    int capacity() const;
+
+    void setFunction(Hash* someFunction);
+    Hash* hashFunction() const;
+
+    void setValue(int key, T value);
+
+    std::vector<List<std::pair<int, T>>> hashTable() const;
+
+    void clear();
+
+    bool contains(const int& key) const;
+    int indexKey(const int& key) const;
+
+    void insert(const int& key, const T& value);
+    void removeKey(const int& key);
+
+    void swap(HashTable& other);
+
+    T& operator[](int const key);
+
+    HashTable<T>& operator=(const HashTable<T>& other);
+
+    friend std::ostream& operator<<(std::ostream& os, const HashTable<T>& other);
+
+private:
+
+    Hash* m_hashFunction = new QuadraticHash();
+
+    std::vector<List<std::pair<int, T>>> m_hashTable;
+
+    int m_capacity = 0;
+};
+
+template <typename T>
+HashTable<T>::HashTable(Hash* hashFunction, int capacity)
+    :m_hashFunction(hashFunction), m_capacity(capacity)
+{
+    for (int i = 0; i < m_capacity; i++)
+    {
+        List<std::pair<int, T>> list = List<std::pair<int, T>>();
+        m_hashTable.push_back(list);
     }
 }
 
-Hash::~Hash() {
-    delete[] TAB;
+template <typename T>
+HashTable<T>::HashTable(const HashTable& other)
+    :m_capacity(other.capacity()), m_hashTable(other.hashTable())
+{
+    m_hashFunction = other.hashFunction()->copy();
 }
 
-Hash::Hash(const Hash& other) : dim(other.dim), p(other.p) {
-    TAB = new Usel[dim];
-    for (int i = 0; i < dim; i++) {
-        TAB[i] = other.TAB[i];
+template <typename T>
+HashTable<T>::~HashTable()
+{
+    delete m_hashFunction;
+}
+
+template <typename T>
+void HashTable<T>::setCapacity(int capacity)
+{
+    HashTable<T> HTcopy(*this);
+
+    m_hashTable.clear();
+
+    for (int i = 0; i < capacity; i++)
+    {
+        List<std::pair<int, T>> list = List<std::pair<int, T>>();
+        m_hashTable.push_back(list);
     }
-}
 
-Hash& Hash::operator=(const Hash& other) {
-    if (this != &other) {
-        delete[] TAB;
-        dim = other.dim;
-        p = other.p;
-        TAB = new Usel[dim];
-        for (int i = 0; i < dim; i++) {
-            TAB[i] = other.TAB[i];
+    m_capacity = capacity;
+
+    for (int i = 0; i < HTcopy.capacity(); i++)
+    {
+        for (int j = 0; j < HTcopy.hashTable()[i].size(); j++)
+        {
+            insert(HTcopy.hashTable()[i][j].first, HTcopy.hashTable()[i][j].second);
         }
     }
-    return *this;
 }
 
-void Hash::Add(int k) {
-    if (Find(k) != -1) return; 
+template <typename T>
+int HashTable<T>::capacity() const
+{
+    return m_capacity;
+}
 
-    int h = k % p;
-    if (TAB[h].key == -1) {
-        TAB[h].key = k;
-        TAB[h].next = -1;
-    }
-    else {
-        int j = dim - 1;
-        while (j >= 0 && TAB[j].key != -1) {
-            j--;
-        }
-
-        if (j < 0) {
-            std::cerr << "Error!\n";
+template <typename T>
+void HashTable<T>::setValue(int key, T value)
+{
+    int hash = m_hashFunction->hash(key, m_capacity);
+    for (int i = 0; i < m_hashTable[hash].size(); i++)
+    {
+        if (m_hashTable[hash][i].first == key)
+        {
+            m_hashTable[hash][i].second = value;
             return;
         }
 
-        TAB[j].key = k;
-        TAB[j].next = -1;
+    }
 
-        int t = h;
-        while (TAB[t].next != -1) {
-            t = TAB[t].next;
+}
+
+template<typename T>
+void HashTable<T>::setFunction(Hash* someFunction)
+{
+    HashTable<T> HTcopy(*this);
+
+    for (int i = 0; i < m_hashTable.size(); i++)
+    {
+        m_hashTable[i].clear();
+    }
+
+    m_hashFunction = someFunction;
+
+    for (int i = 0; i < HTcopy.capacity(); i++)
+    {
+        for (int j = 0; j < HTcopy.hashTable()[i].size(); j++)
+        {
+            insert(HTcopy.hashTable()[i][j].first, HTcopy.hashTable()[i][j].second);
         }
-        TAB[t].next = j;
     }
 }
 
-int Hash::Find(int k) const {
-    int h = k % p;
-    if (TAB[h].key == -1) return -1;
+template<typename T>
+Hash* HashTable<T>::hashFunction() const
+{
+    return m_hashFunction;
+}
 
-    int t = h;
-    while (t != -1) {
-        if (TAB[t].key == k) {
-            return t;
+template <typename T>
+std::vector<List<std::pair<int, T>>> HashTable<T>::hashTable() const
+{
+    return m_hashTable;
+}
+
+template<typename T>
+void HashTable<T>::clear()
+{
+    m_hashTable.clear();
+}
+
+template<typename T>
+bool HashTable<T>::contains(const int& key) const
+{
+    int hash = m_hashFunction->hash(key, m_capacity);
+
+    for (int i = 0; i < m_hashTable[hash].size(); i++)
+    {
+        if (m_hashTable[hash][i].first == key)
+        {
+            return true;
         }
-        t = TAB[t].next;
+    }
+    return false;
+}
+
+template<typename T>
+int HashTable<T>::indexKey(const int& key) const
+{
+    int hash = m_hashFunction->hash(key, m_capacity);
+
+    for (int i = 0; i < m_hashTable[hash].size(); i++)
+    {
+        if (m_hashTable[hash][i].first == key)
+        {
+            return i;
+        }
     }
     return -1;
 }
 
-void Hash::Del(int k) {
-    int h = k % p;
-    if (TAB[h].key == -1) return;
+template <typename T>
+void HashTable<T>::insert(const int& key, const T& value)
+{
+    if (contains(key))
+    {
+        return;
+    }
+    int hash = m_hashFunction->hash(key, m_capacity);
 
-    int t = h;
-    int prev = -1;
+    m_hashTable[hash].addToTail(std::pair<int, T>(key, value));
+}
 
-    while (t != -1) {
-        if (TAB[t].key == k) {
-            if (prev == -1) {
-                if (TAB[t].next != -1) {
-                    int nxt = TAB[t].next;
-                    std::swap(TAB[t].key, TAB[nxt].key);
-                    std::swap(TAB[t].next, TAB[nxt].next);
-                    TAB[nxt].key = -1;
-                    TAB[nxt].next = -1;
-                }
-                else {
-                    TAB[t].key = -1;
-                    TAB[t].next = -1;
-                }
-            }
-            else {
-                TAB[prev].next = TAB[t].next;
-                TAB[t].key = -1;
-                TAB[t].next = -1;
-            }
-            return;
+template<typename T>
+void HashTable<T>::removeKey(const int& key)
+{
+
+    int hash = m_hashFunction->hash(key, m_capacity);
+    for (int i = 0; i < m_hashTable[hash].size(); i++)
+    {
+        if (m_hashTable[hash][i].first == key)
+        {
+            m_hashTable[hash].deleteElementFromPosition(i);
         }
-        prev = t;
-        t = TAB[t].next;
     }
 }
 
-void Hash::Print() const {
-    for (int i = 0; i < dim; i++) {
-        std::cout << "TAB[" << i << "]: ";
-        if (TAB[i].key == -1) {
-            std::cout << "пусто";
+template<typename T>
+void HashTable<T>::swap(HashTable& other)
+{
+    std::swap(m_capacity, other.m_capacity);
+    std::swap(m_hashFunction, other.m_hashFunction);
+    std::swap(m_hashTable, other.m_hashTable);
+}
+
+template<typename T>
+T& HashTable<T>::operator[](int const key)
+{
+    int hash = m_hashFunction->hash(key, m_capacity);
+
+    for (int i = 0; i < m_hashTable[hash].size(); i++)
+    {
+        if (m_hashTable[hash][i].first == key)
+        {
+            return m_hashTable[hash][i].second;
         }
-        else {
-            int t = i;
-            while (t != -1) {
-                std::cout << TAB[t].key;
-                if (TAB[t].next != -1) {
-                    std::cout << " (next: " << TAB[t].next << ") -> ";
-                }
-                else {
-                    std::cout << " (next: -1)";
-                }
-                t = TAB[t].next;
-            }
-        }
-        std::cout << "\n";
     }
+}
+
+template<typename T>
+HashTable<T>& HashTable<T>::operator=(const HashTable<T>& other)
+{
+    clear();
+
+    m_hashTable = other.hashTable();
+    return *this;
+
+}
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, HashTable<T>& other)
+{
+    for (int i = 0; i < other.capacity(); i++)
+    {
+        os << "hash = " << i << ":\t";
+        for (int j = 0; j < other.hashTable()[i].size(); j++)
+        {
+            os << "key = " << other.hashTable()[i][j].first << ", value = " << other.hashTable()[i][j].second << " -----> ";
+        }
+        os << "NULL" << std::endl;
+    }
+    return os;
 }

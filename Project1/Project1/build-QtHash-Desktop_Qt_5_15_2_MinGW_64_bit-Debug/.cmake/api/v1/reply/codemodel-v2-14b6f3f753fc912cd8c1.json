@@ -1,0 +1,79 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-d44fea053fd497986e71.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "QtHash",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "QtHash::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-QtHash-Debug-41a0af9422250901dee1.json",
+					"name" : "QtHash",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "QtHash_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-QtHash_autogen-Debug-c24105ba22814d6a0e87.json",
+					"name" : "QtHash_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "QtHash_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-QtHash_autogen_timestamp_deps-Debug-14eb4e82113a2b230fab.json",
+					"name" : "QtHash_autogen_timestamp_deps",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/zrik/Education/ASD-2/Project1/Project1/build-QtHash-Desktop_Qt_5_15_2_MinGW_64_bit-Debug",
+		"source" : "C:/zrik/Education/ASD-2/Project1/Project1/QtHash"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}

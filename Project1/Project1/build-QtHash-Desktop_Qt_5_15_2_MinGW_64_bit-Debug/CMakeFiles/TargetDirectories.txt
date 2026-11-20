@@ -1,0 +1,9 @@
+C:/zrik/Education/ASD-2/Project1/Project1/build-QtHash-Desktop_Qt_5_15_2_MinGW_64_bit-Debug/CMakeFiles/QtHash.dir
+C:/zrik/Education/ASD-2/Project1/Project1/build-QtHash-Desktop_Qt_5_15_2_MinGW_64_bit-Debug/CMakeFiles/edit_cache.dir
+C:/zrik/Education/ASD-2/Project1/Project1/build-QtHash-Desktop_Qt_5_15_2_MinGW_64_bit-Debug/CMakeFiles/rebuild_cache.dir
+C:/zrik/Education/ASD-2/Project1/Project1/build-QtHash-Desktop_Qt_5_15_2_MinGW_64_bit-Debug/CMakeFiles/list_install_components.dir
+C:/zrik/Education/ASD-2/Project1/Project1/build-QtHash-Desktop_Qt_5_15_2_MinGW_64_bit-Debug/CMakeFiles/install.dir
+C:/zrik/Education/ASD-2/Project1/Project1/build-QtHash-Desktop_Qt_5_15_2_MinGW_64_bit-Debug/CMakeFiles/install/local.dir
+C:/zrik/Education/ASD-2/Project1/Project1/build-QtHash-Desktop_Qt_5_15_2_MinGW_64_bit-Debug/CMakeFiles/install/strip.dir
+C:/zrik/Education/ASD-2/Project1/Project1/build-QtHash-Desktop_Qt_5_15_2_MinGW_64_bit-Debug/CMakeFiles/QtHash_autogen_timestamp_deps.dir
+C:/zrik/Education/ASD-2/Project1/Project1/build-QtHash-Desktop_Qt_5_15_2_MinGW_64_bit-Debug/CMakeFiles/QtHash_autogen.dir
